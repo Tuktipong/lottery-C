@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สลากออมคะแนน By ครูทักติพงษ์</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .login-container {
+            display: block;
+        }
+
+        .main-container {
+            display: none;
+        }
+
+        h1 {
+            color: #4a90e2;
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #4a90e2, #357abd);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+        }
+
+        .btn-warning:hover {
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+        }
+
+        .result-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(45deg, #e3f2fd, #bbdefb);
+            border-radius: 10px;
+            border: 2px solid #4a90e2;
+        }
+
+        .lottery-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #1976d2;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 15px 0;
+        }
+
+        .info {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(74, 144, 226, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #4a90e2;
+        }
+
+        .remaining-count {
+            font-size: 18px;
+            color: #1976d2;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #e74c3c;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin: 0;
+            flex: 1;
+        }
+
+        .logout-btn {
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .button-group {
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .lottery-number {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- หน้าเข้าสู่ระบบ -->
+        <div class="login-container" id="loginContainer">
+            <h1>สลากออมคะแนน<br>By ครูทักติพงษ์</h1>
+            <div class="input-group">
+                <label for="passwordInput">รหัสผ่าน:</label>
+                <input type="password" id="passwordInput" placeholder="กรุณาใส่รหัสผ่าน">
+            </div>
+            <button class="btn" onclick="login()">เข้าสู่ระบบ</button>
+            <div id="loginError" class="error"></div>
+        </div>
+
+        <!-- หน้าหลัก -->
+        <div class="main-container" id="mainContainer">
+            <div class="header">
+                <h1>สลากออมคะแนน<br>By ครูทักติพงษ์</h1>
+                <button class="btn logout-btn" onclick="logout()">ออกจากระบบ</button>
+            </div>
+
+            <div class="info">
+                <div class="remaining-count" id="remainingCount">เหลือหมายเลข: 60 หมายเลข</div>
+            </div>
+
+            <button class="btn" onclick="drawLottery()" id="drawButton">สุ่มสลากออมคะแนน</button>
+
+            <div class="result-container" id="resultContainer" style="display: none;">
+                <h3>หมายเลขที่สุ่มได้:</h3>
+                <div class="lottery-number" id="lotteryResult"></div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-warning" onclick="resetLottery()">รีเซ็ทการสุ่ม</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ชุดตัวเลขสลาก
+        const originalNumbers = [
+            384920, 219384, 847362, 190283, 736451, 504312, 648295, 382716, 729183, 195837,
+            483920, 615384, 827364, 940271, 163849, 738492, 274839, 196427, 308194, 527316,
+            619283, 473829, 821746, 309481, 246813, 685294, 934710, 749283, 821493, 657182,
+            918273, 564738, 372849, 493820, 710294, 583920, 294817, 361840, 742983, 693210,
+            814729, 206384, 918346, 370284, 549283, 638201, 127349, 459182, 630194, 892374,
+            104729, 298374, 573829, 640182, 319284, 758293, 402918, 693184, 812736, 547382
+        ];
+
+        let availableNumbers = [];
+        let drawnNumbers = [];
+        const correctPassword = "39020";
+
+        // โหลดข้อมูลจาก localStorage
+        function loadData() {
+            const savedAvailable = localStorage.getItem('availableNumbers');
+            const savedDrawn = localStorage.getItem('drawnNumbers');
+            
+            if (savedAvailable && savedDrawn) {
+                availableNumbers = JSON.parse(savedAvailable);
+                drawnNumbers = JSON.parse(savedDrawn);
+            } else {
+                availableNumbers = [...originalNumbers];
+                drawnNumbers = [];
+            }
+            
+            updateRemainingCount();
+        }
+
+        // บันทึกข้อมูลลง localStorage
+        function saveData() {
+            localStorage.setItem('availableNumbers', JSON.stringify(availableNumbers));
+            localStorage.setItem('drawnNumbers', JSON.stringify(drawnNumbers));
+        }
+
+        // เข้าสู่ระบบ
+        function login() {
+            const password = document.getElementById('passwordInput').value;
+            const errorDiv = document.getElementById('loginError');
+
+            if (password === correctPassword) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                loadData();
+                errorDiv.textContent = '';
+            } else {
+                errorDiv.textContent = 'รหัสผ่านไม่ถูกต้อง';
+            }
+        }
+
+        // ออกจากระบบ
+        function logout() {
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('mainContainer').style.display = 'none';
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('resultContainer').style.display = 'none';
+        }
+
+        // อัปเดตจำนวนที่เหลือ
+        function updateRemainingCount() {
+            document.getElementById('remainingCount').textContent = 
+                `เหลือหมายเลข: ${availableNumbers.length} หมายเลข`;
+            
+            // ปิดปุ่มสุ่มถ้าไม่มีหมายเลขเหลือ
+            const drawButton = document.getElementById('drawButton');
+            if (availableNumbers.length === 0) {
+                drawButton.textContent = 'หมายเลขหมดแล้ว';
+                drawButton.disabled = true;
+                drawButton.style.opacity = '0.5';
+            } else {
+                drawButton.textContent = 'สุ่มสลากออมคะแนน';
+                drawButton.disabled = false;
+                drawButton.style.opacity = '1';
+            }
+        }
+
+        // สุ่มสลาก
+        function drawLottery() {
+            if (availableNumbers.length === 0) {
+                alert('หมายเลขหมดแล้ว กรุณารีเซ็ทการสุ่ม');
+                return;
+            }
+
+            // สุ่มเลือกหมายเลข
+            const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+            const drawnNumber = availableNumbers[randomIndex];
+
+            // ย้ายหมายเลขที่สุ่มได้ไปยังรายการที่สุ่มแล้ว
+            availableNumbers.splice(randomIndex, 1);
+            drawnNumbers.push(drawnNumber);
+
+            // แสดงผลลัพธ์
+            document.getElementById('lotteryResult').textContent = drawnNumber;
+            document.getElementById('resultContainer').style.display = 'block';
+
+            // อัปเดตจำนวนที่เหลือ
+            updateRemainingCount();
+
+            // บันทึกข้อมูล
+            saveData();
+
+            // เลื่อนไปยังผลลัพธ์
+            document.getElementById('resultContainer').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+        }
+
+        // รีเซ็ทการสุ่ม
+        function resetLottery() {
+            if (confirm('คุณต้องการรีเซ็ทการสุ่มทั้งหมดหรือไม่?')) {
+                availableNumbers = [...originalNumbers];
+                drawnNumbers = [];
+                
+                // ซ่อนผลลัพธ์
+                document.getElementById('resultContainer').style.display = 'none';
+                
+                // อัปเดตจำนวนที่เหลือ
+                updateRemainingCount();
+                
+                // บันทึกข้อมูล
+                saveData();
+                
+                alert('รีเซ็ทการสุ่มเรียบร้อยแล้ว');
+            }
+        }
+
+        // เมื่อกดปุ่ม Enter ในช่องรหัสผ่าน
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+
+        // เริ่มต้น
+        window.onload = function() {
+            // ตรวจสอบว่ามีการเข้าสู่ระบบอยู่หรือไม่
+            loadData();
+        };
+    </script>
+</body>
+</html>
